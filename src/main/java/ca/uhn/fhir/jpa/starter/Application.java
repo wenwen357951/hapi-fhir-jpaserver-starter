@@ -24,8 +24,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
 
-@ServletComponentScan(basePackageClasses = {RestfulServer.class})
-@SpringBootApplication(exclude = {ThymeleafAutoConfiguration.class})
+@ServletComponentScan(
+	basePackageClasses = {RestfulServer.class},
+	basePackages = {"tw.org.csh.aic.fhir"}
+)
+@SpringBootApplication(
+	exclude = {ThymeleafAutoConfiguration.class},
+	scanBasePackages = {"ca.uhn.fhir.jpa.starter", "tw.org.csh.aic.fhir"}
+)
 @Import({
 	StarterCrR4Config.class,
 	StarterCrDstu3Config.class,

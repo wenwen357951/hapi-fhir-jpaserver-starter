@@ -1,29 +1,4 @@
 # -------------------------------------------------------------------------------------
-# SMART on FHIR
-# -------------------------------------------------------------------------------------
-smart:
-  oauth:
-    issuer: http://localhost/healthcare/auth/realms/smart-subscription-platform
-    jwks_uri: http://localhost/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/certs
-    authorization_endpoint: http://localhost/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/auth
-    token_endpoint: http://localhost/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/token
-    registration_endpoint: http://localhost/healthcare/auth/realms/smart-subscription-platform/clients-registrations/openid-connect
-    end_session_endpoint: http://localhost/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/logout
-    token_endpoint_auth_methods_supported:
-      - private_key_jwt
-      - client_credentials
-    grant_types_supported:
-      - authorization_code
-      - client_credentials
-    scopes_supported:
-      - openid
-      - profile
-    code_challenge_methods_supported:
-      - S256
-    capabilities:
-      - launch-ehr
-
-# -------------------------------------------------------------------------------------
 # Server & Spring Boot
 # -------------------------------------------------------------------------------------
 server:
@@ -170,7 +145,7 @@ spring:
         registration:
           keycloak:
             client-id: server-hapi-fhir
-            client-secret: N2JDzt3GvyNY3IsFdBxyhoTBmFt9oQi2
+            client-secret: hoeV6h1uWnwD9so68WM7Rq6smFsJ25IM
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope:
               - openid
@@ -179,10 +154,37 @@ spring:
             client-authentication-method: client_secret_basic
         provider:
           keycloak:
-            issuer-uri: http://localhost/healthcare/auth/realms/smart-subscription-platform
+            issuer-uri: http://localhost:9001/healthcare/auth/realms/smart-subscription-platform
       resourceserver:
         jwt:
-          issuer-uri: http://localhost/healthcare/auth/realms/smart-subscription-platform
+          issuer-uri: http://localhost:9001/healthcare/auth/realms/smart-subscription-platform
+
+# -------------------------------------------------------------------------------------
+# SMART on FHIR
+# -------------------------------------------------------------------------------------
+smart:
+  oauth:
+    issuer: http://localhost:9001/healthcare/auth/realms/smart-subscription-platform
+    authorization-endpoint: http://localhost:9001/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/auth
+    token-endpoint: http://localhost:9001/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/token
+    jwks-uri: http://localhost:9001/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/certs
+    introspection-endpoint: http://localhost:9001/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/token/introspect
+#    registration_endpoint: http://localhost/healthcare/auth/realms/smart-subscription-platform/clients-registrations/openid-connect
+#    end_session_endpoint: http://localhost/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/logout
+#    token_endpoint_auth_methods_supported:
+#      - private_key_jwt
+#      - client_credentials
+#    grant_types_supported:
+#      - authorization_code
+#      - client_credentials
+#    scopes_supported:
+#      - openid
+#      - profile
+#    code_challenge_methods_supported:
+#      - S256
+#    capabilities:
+#      - launch-ehr
+
 # -------------------------------------------------------------------------------------
 # HAPI FHIR — grouped by domain
 # -------------------------------------------------------------------------------------

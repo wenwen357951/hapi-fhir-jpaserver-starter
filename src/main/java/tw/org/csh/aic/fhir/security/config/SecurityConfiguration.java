@@ -1,4 +1,4 @@
-package tw.org.csh.aic.fhir.config;
+package tw.org.csh.aic.fhir.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,11 +65,11 @@ public class SecurityConfiguration {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowedOrigins(List.of(
-			"https://wenwen357951.github.io"
-		));
+		config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
+		config.setAllowedOrigins(List.of("*"));
 		config.setAllowedHeaders(List.of("*"));
 		config.setAllowCredentials(false);
+
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/fhir/**", config);
 		return source;
@@ -80,14 +80,13 @@ public class SecurityConfiguration {
 		JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
 		converter.setJwtGrantedAuthoritiesConverter(jwt -> {
 			Object scopeObj = jwt.getClaims().get("scope");
-			if (scopeObj == null) {
-				return List.of();
+			if (scopeObj instanceof String scopeStr) {
+				return Arrays.stream(scopeStr.split("\\s+"))
+					.filter(s -> !s.isBlank())
+					.map(s -> new SimpleGrantedAuthority("SCOPE_" + s))
+					.collect(Collectors.toList());
 			}
-
-			String scope = scopeObj.toString();
-			return Arrays.stream(scope.split(" "))
-				.map(s -> new SimpleGrantedAuthority("SCOPE_" + s))
-				.collect(Collectors.toSet());
+			return List.of();
 		});
 
 		return converter;

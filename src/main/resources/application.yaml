@@ -93,10 +93,10 @@ spring:
 
   datasource:
     # url: "jdbc:h2:file:./target/database/h2"
-    url: jdbc:postgresql://localhost:5432/hapi
-    username: admin
-    password: admin
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:h2:mem:test_mem
+    username: sa
+    password: null
+    driver-class-name: org.h2.Driver
     # max-active: 15     # (ignored with HikariCP; use hikari.maximum-pool-size)
     hikari:
       maximum-pool-size: 10
@@ -109,7 +109,7 @@ spring:
         # Hibernate dialect is auto-detected except for H2/Postgres.
         # If using H2:     ca.uhn.fhir.jpa.model.dialect.HapiFhirH2Dialect
         # If using Postgres: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
-        dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
+        dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirH2Dialect
 
         # --- Optional Hibernate DDL & tuning (commented out from source) ---
         hbm2ddl:
@@ -141,49 +141,21 @@ spring:
           #     configurer: ca.uhn.fhir.jpa.search.HapiHSearchAnalysisConfigurers$HapiElasticAnalysisConfigurer
   security:
     oauth2:
-      client:
-        registration:
-          keycloak:
-            client-id: server-hapi-fhir
-            client-secret: hoeV6h1uWnwD9so68WM7Rq6smFsJ25IM
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-            scope:
-              - openid
-              - profile
-            authorization-grant-type: authorization_code
-            client-authentication-method: client_secret_basic
-        provider:
-          keycloak:
-            issuer-uri: http://localhost:9001/healthcare/auth/realms/smart-subscription-platform
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:9001/healthcare/auth/realms/smart-subscription-platform
+          issuer-uri: https://aic.csh.org.tw/healthcare/auth/realms/smart-subscription-platform
 
 # -------------------------------------------------------------------------------------
 # SMART on FHIR
 # -------------------------------------------------------------------------------------
 smart:
   oauth:
-    issuer: http://localhost:9001/healthcare/auth/realms/smart-subscription-platform
-    authorization-endpoint: http://localhost:9001/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/auth
-    token-endpoint: http://localhost:9001/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/token
+    issuer: https://aic.csh.org.tw/healthcare/auth/realms/smart-subscription-platform
+    authorization-endpoint: https://aic.csh.org.tw/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/auth
+    token-endpoint: https://aic.csh.org.tw/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/token
     jwks-uri: http://localhost:9001/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/certs
-    introspection-endpoint: http://localhost:9001/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/token/introspect
-#    registration_endpoint: http://localhost/healthcare/auth/realms/smart-subscription-platform/clients-registrations/openid-connect
-#    end_session_endpoint: http://localhost/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/logout
-#    token_endpoint_auth_methods_supported:
-#      - private_key_jwt
-#      - client_credentials
-#    grant_types_supported:
-#      - authorization_code
-#      - client_credentials
-#    scopes_supported:
-#      - openid
-#      - profile
-#    code_challenge_methods_supported:
-#      - S256
-#    capabilities:
-#      - launch-ehr
+    introspection-endpoint: https://aic.csh.org.tw/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/token/introspect
+
 
 # -------------------------------------------------------------------------------------
 # HAPI FHIR — grouped by domain
@@ -206,15 +178,10 @@ hapi:
     # -------------------------------------------------------------------------------
     # B. Implementation Guides (IG) & Package Install
     # -------------------------------------------------------------------------------
-    ig_runtime_upload_enabled: true
+    ig_runtime_upload_enabled: false
     # validate_resource_status_for_package_upload: false   # default true
     # install_transitive_ig_dependencies: true
-    implementationguides:
-      twcore:
-        name: tw.gov.mohw.twcore
-        version: 0.3.2
-        reload-existing: false
-        install-mode: STORE_ONLY
+    # implementationguides:
     #   swiss:
     #     name: swiss.mednet.fhir
     #     version: 0.8.0
@@ -313,8 +280,7 @@ hapi:
     # -------------------------------------------------------------------------------
     # allow_cascading_deletes: true
     # allow_contains_searches: true
-    # 若需串接他院資料則設為 true
-    allow_external_references: true
+    # allow_external_references: true
     # allow_multiple_delete: true
     # allow_override_default_search_params: true
     # auto_create_placeholder_reference_targets: false
@@ -322,8 +288,8 @@ hapi:
     # auto_version_reference_at_paths: Device.patient, Device.location, Device.parent, DeviceMetric.parent, DeviceMetric.source, Observation.device, Observation.subject
     # client_id_strategy: ALPHANUMERIC
     # server_id_strategy: SEQUENTIAL_NUMERIC
-    enforce_referential_integrity_on_delete: true
-    enforce_referential_integrity_on_write: true
+    # enforce_referential_integrity_on_delete: false
+    # enforce_referential_integrity_on_write: false
     # etag_support_enabled: true
     # expunge_enabled: true
     # fhirpath_interceptor_enabled: false
@@ -340,9 +306,9 @@ hapi:
     # G. Narrative & Validation
     # -------------------------------------------------------------------------------
     narrative_enabled: false
-    validation:
-      requests_enabled: true
-      # responses_enabled: true
+    # validation:
+    #   requests_enabled: true
+    #   responses_enabled: true
 
     # -------------------------------------------------------------------------------
     # H. MDM (Master Data Management)
@@ -485,3 +451,8 @@ hapi:
     # R. LastN (analytics)
     # -------------------------------------------------------------------------------
     # lastn_enabled: true
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    tw.org.csh.aic.fhir.security.smart: DEBUG

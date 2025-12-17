@@ -30,7 +30,10 @@ import org.springframework.context.annotation.Import;
 )
 @SpringBootApplication(
 	exclude = {ThymeleafAutoConfiguration.class},
-	scanBasePackages = {"ca.uhn.fhir.jpa.starter", "tw.org.csh.aic.fhir"}
+	scanBasePackages = {
+		"ca.uhn.fhir.jpa.starter",
+		"tw.org.csh.aic.fhir"
+	}
 )
 @Import({
 	StarterCrR4Config.class,
@@ -59,8 +62,8 @@ public class Application extends SpringBootServletInitializer {
 
 	@Bean
 	@Conditional(OnEitherVersion.class)
-	public ServletRegistrationBean hapiServletRegistration(RestfulServer restfulServer) {
-		ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean();
+	public ServletRegistrationBean<RestfulServer> hapiServletRegistration(RestfulServer restfulServer) {
+		ServletRegistrationBean<RestfulServer> servletRegistrationBean = new ServletRegistrationBean<>();
 		beanFactory.autowireBean(restfulServer);
 		servletRegistrationBean.setServlet(restfulServer);
 		servletRegistrationBean.addUrlMappings("/fhir/*");

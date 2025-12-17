@@ -18,7 +18,7 @@ import java.io.PrintWriter;
 	name = "SmartConfigurationServlet",
 	urlPatterns = {"/fhir/.well-known/smart-configuration"}
 )
-public class SmartConfigurationServlet extends HttpServlet {
+public final class SmartConfigurationServlet extends HttpServlet {
 
 	@Value("${smart.oauth.issuer}")
 	public String issuer;

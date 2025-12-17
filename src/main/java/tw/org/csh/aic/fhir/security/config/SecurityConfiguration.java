@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -13,8 +14,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Configuration
@@ -39,6 +39,7 @@ public class SecurityConfiguration {
 					"/actuator/**",
 					"/fhir/swagger-ui"
 				).permitAll()
+				.requestMatchers("/fhir/DEFAULT/$partition*", "/fhir/$partition*").hasAuthority("ROLE_realm-admin")
 				.requestMatchers("/fhir/{tenantId}/**").authenticated()
 				.anyRequest().denyAll()
 			)
@@ -61,14 +62,30 @@ public class SecurityConfiguration {
 	public JwtAuthenticationConverter jwtAuthenticationConverter() {
 		JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
 		converter.setJwtGrantedAuthoritiesConverter(jwt -> {
+			Collection<GrantedAuthority> authorities = new ArrayList<>();
+
 			Object scopeObj = jwt.getClaims().get("scope");
 			if (scopeObj instanceof String scopeStr) {
-				return Arrays.stream(scopeStr.split("\\s+"))
+				Arrays.stream(scopeStr.split("\\s+"))
 					.filter(s -> !s.isBlank())
 					.map(s -> new SimpleGrantedAuthority("SCOPE_" + s))
-					.collect(Collectors.toList());
+					.forEach(authorities::add);
 			}
-			return List.of();
+			Object raObj = jwt.getClaims().get("resource_access");
+			if (raObj instanceof Map<?, ?> ra) {
+				Object rmObj = ra.get("realm-management");
+				if (rmObj instanceof Map<?, ?> rm) {
+					Object rolesObj = rm.get("roles");
+					if (rolesObj instanceof Collection<?> roles) {
+						roles.stream()
+							.filter(Objects::nonNull)
+							.map(Object::toString)
+							.map(r -> new SimpleGrantedAuthority("ROLE_" + r))
+							.forEach(authorities::add);
+					}
+				}
+			}
+			return authorities;
 		});
 		return converter;
 	}

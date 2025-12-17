@@ -143,18 +143,18 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://aic.csh.org.tw/healthcare/auth/realms/smart-subscription-platform
+          issuer-uri: https://aic.csh.org.tw/healthcare/auth/realms/subscription-platform
 
 # -------------------------------------------------------------------------------------
 # SMART on FHIR
 # -------------------------------------------------------------------------------------
 smart:
   oauth:
-    issuer: https://aic.csh.org.tw/healthcare/auth/realms/smart-subscription-platform
-    authorization-endpoint: https://aic.csh.org.tw/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/auth
-    token-endpoint: https://aic.csh.org.tw/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/token
-    jwks-uri: http://localhost:9001/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/certs
-    introspection-endpoint: https://aic.csh.org.tw/healthcare/auth/realms/smart-subscription-platform/protocol/openid-connect/token/introspect
+    issuer: https://aic.csh.org.tw/healthcare/auth/realms/subscription-platform
+    authorization-endpoint: https://aic.csh.org.tw/healthcare/auth/realms/subscription-platform/protocol/openid-connect/auth
+    token-endpoint: https://aic.csh.org.tw/healthcare/auth/realms/subscription-platform/protocol/openid-connect/token
+    jwks-uri: http://localhost:9001/healthcare/auth/realms/subscription-platform/protocol/openid-connect/certs
+    introspection-endpoint: https://aic.csh.org.tw/healthcare/auth/realms/subscription-platform/protocol/openid-connect/token/introspect
 
 
 # -------------------------------------------------------------------------------------

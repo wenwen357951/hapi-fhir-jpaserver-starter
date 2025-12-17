@@ -1,1 +1,1 @@
-docker build -t wenwen357951/hapi-fhir-jpaserver-starter .
+docker build -t wenwen357951/hapi .

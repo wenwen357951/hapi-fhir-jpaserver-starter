@@ -52,7 +52,6 @@ public class SecurityConfiguration {
 		config.setAllowedOrigins(List.of("*"));
 		config.setAllowedHeaders(List.of("*"));
 		config.setAllowCredentials(false);
-
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/fhir/**", config);
 		return source;

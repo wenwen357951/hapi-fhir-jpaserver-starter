@@ -25,14 +25,14 @@ public class SmartAuthorizationInterceptor extends AuthorizationInterceptor {
 
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (!(auth instanceof JwtAuthenticationToken jwtAuth)) {
-			return new RuleBuilder().denyAll().build();
+			return new RuleBuilder().denyAll("Authentication is not JWT-based").build();
 		}
 
 		String tokenTenant = normalize(jwtAuth.getToken().getClaimAsString(CLAIM_TENANT));
 		if (tokenTenant == null) tokenTenant = DEFAULT_TENANT;
 
 		if (!Objects.equals(tokenTenant, targetTenant)) {
-			return new RuleBuilder().denyAll().build();
+			return new RuleBuilder().denyAll("Tenant mismatch between token and request").build();
 		}
 
 		return new RuleBuilder().allowAll().build();

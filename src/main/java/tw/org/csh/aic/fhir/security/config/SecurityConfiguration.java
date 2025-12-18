@@ -15,7 +15,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Configuration
 public class SecurityConfiguration {
@@ -36,8 +35,10 @@ public class SecurityConfiguration {
 				.requestMatchers(
 					"/fhir/.well-known/smart-configuration",
 					"/fhir/metadata",
+					"/fhir/api-docs",
 					"/actuator/**",
-					"/fhir/swagger-ui"
+					"/fhir/swagger-ui/",
+					"/fhir/swagger-ui/**"
 				).permitAll()
 				.requestMatchers("/fhir/DEFAULT/$partition*", "/fhir/$partition*").hasAuthority("ROLE_realm-admin")
 				.requestMatchers("/fhir/{tenantId}/**").authenticated()

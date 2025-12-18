@@ -21,9 +21,11 @@ public class SmartAuthorizationInterceptor extends AuthorizationInterceptor {
 	private static final String CLAIM_TENANT = "tenant_id";
 	private static final PathMatcher PATH_MATCHER = new AntPathMatcher();
 	private static final String[] EXCLUDED_PATHS = {
+		"/fhir/.well-known/smart-configuration",
 		"/fhir/metadata",
+		"/fhir/api-docs",
 		"/actuator/**",
-		"/fhir/swagger-ui",
+		"/fhir/swagger-ui/",
 		"/fhir/swagger-ui/**"
 	};
 

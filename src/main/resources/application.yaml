@@ -93,10 +93,10 @@ spring:
 
   datasource:
     # url: "jdbc:h2:file:./target/database/h2"
-    url: jdbc:h2:mem:test_mem
-    username: sa
-    password: null
-    driver-class-name: org.h2.Driver
+    url: jdbc:postgresql://localhost:5432/hapi
+    username: admin
+    password: admin
+    driver-class-name: org.postgresql.Driver
     # max-active: 15     # (ignored with HikariCP; use hikari.maximum-pool-size)
     hikari:
       maximum-pool-size: 10
@@ -109,7 +109,7 @@ spring:
         # Hibernate dialect is auto-detected except for H2/Postgres.
         # If using H2:     ca.uhn.fhir.jpa.model.dialect.HapiFhirH2Dialect
         # If using Postgres: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
-        dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirH2Dialect
+        dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
 
         # --- Optional Hibernate DDL & tuning (commented out from source) ---
         hbm2ddl:
@@ -161,10 +161,15 @@ hapi:
     # -------------------------------------------------------------------------------
     # B. Implementation Guides (IG) & Package Install
     # -------------------------------------------------------------------------------
-    ig_runtime_upload_enabled: false
+    ig_runtime_upload_enabled: true
     # validate_resource_status_for_package_upload: false   # default true
     # install_transitive_ig_dependencies: true
-    # implementationguides:
+    implementationguides:
+      twcore:
+        name: tw.gov.mohw.twcore
+        version: 0.3.2
+        reload-existing: false
+        install-mode: STORE_ONLY
     #   swiss:
     #     name: swiss.mednet.fhir
     #     version: 0.8.0
@@ -263,7 +268,8 @@ hapi:
     # -------------------------------------------------------------------------------
     # allow_cascading_deletes: true
     # allow_contains_searches: true
-    # allow_external_references: true
+    # 若需串接他院資料則設為 true
+    allow_external_references: true
     # allow_multiple_delete: true
     # allow_override_default_search_params: true
     # auto_create_placeholder_reference_targets: false
@@ -271,8 +277,8 @@ hapi:
     # auto_version_reference_at_paths: Device.patient, Device.location, Device.parent, DeviceMetric.parent, DeviceMetric.source, Observation.device, Observation.subject
     # client_id_strategy: ALPHANUMERIC
     # server_id_strategy: SEQUENTIAL_NUMERIC
-    # enforce_referential_integrity_on_delete: false
-    # enforce_referential_integrity_on_write: false
+    enforce_referential_integrity_on_delete: true
+    enforce_referential_integrity_on_write: true
     # etag_support_enabled: true
     # expunge_enabled: true
     # fhirpath_interceptor_enabled: false
@@ -289,9 +295,9 @@ hapi:
     # G. Narrative & Validation
     # -------------------------------------------------------------------------------
     narrative_enabled: false
-    # validation:
-    #   requests_enabled: true
-    #   responses_enabled: true
+    validation:
+      requests_enabled: true
+      # responses_enabled: true
 
     # -------------------------------------------------------------------------------
     # H. MDM (Master Data Management)
@@ -321,13 +327,13 @@ hapi:
     # -------------------------------------------------------------------------------
     # J. Partitioning & Multitenancy
     # -------------------------------------------------------------------------------
-    # partitioning:
-    #   allow_references_across_partitions: false
-    #   partitioning_include_in_search_hashes: false
-    #   default_partition_id: 0
-    # database_partition_mode_enabled: true
-    # patient_id_partitioning_mode: true
-    # request_tenant_partitioning_mode: false
+    partitioning:
+      allow_references_across_partitions: false
+      partitioning_include_in_search_hashes: false
+      default_partition_id: 0
+      database_partition_mode_enabled: true
+      patient_id_partitioning_mode: false
+      request_tenant_partitioning_mode: false
 
     # -------------------------------------------------------------------------------
     # K. CORS

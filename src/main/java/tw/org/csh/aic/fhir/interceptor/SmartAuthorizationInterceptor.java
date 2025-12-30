@@ -12,7 +12,6 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
 import java.util.List;
-import java.util.Objects;
 
 @Component
 public class SmartAuthorizationInterceptor extends AuthorizationInterceptor {
@@ -36,20 +35,18 @@ public class SmartAuthorizationInterceptor extends AuthorizationInterceptor {
 			return new RuleBuilder().allowAll().build();
 		}
 
-		String targetTenant = normalize(theRequestDetails.getTenantId());
-		if (targetTenant == null) targetTenant = DEFAULT_TENANT;
-
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (!(auth instanceof JwtAuthenticationToken jwtAuth)) {
 			return new RuleBuilder().denyAll("Authentication is not JWT-based").build();
 		}
 
 		String tokenTenant = normalize(jwtAuth.getToken().getClaimAsString(CLAIM_TENANT));
-		if (tokenTenant == null) tokenTenant = DEFAULT_TENANT;
 
-		if (!Objects.equals(tokenTenant, targetTenant)) {
-			return new RuleBuilder().denyAll("Tenant mismatch between token and request").build();
+		if (tokenTenant == null) {
+			return new RuleBuilder().denyAll("Tenant ID not found inside JWT token").build();
 		}
+
+		theRequestDetails.setTenantId(tokenTenant);
 
 		return new RuleBuilder().allowAll().build();
 	}
